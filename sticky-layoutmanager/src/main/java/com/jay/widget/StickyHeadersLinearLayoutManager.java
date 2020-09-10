@@ -4,19 +4,20 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by jay on 2017/12/4 上午10:57
- *
+ * <p>
  * Adds sticky headers capabilities to your {@link RecyclerView.Adapter}. It must implement {@link StickyHeaders} to
  * indicate which items are headers.
  *
@@ -267,6 +268,11 @@ public class StickyHeadersLinearLayoutManager<T extends RecyclerView.Adapter & S
         return view;
     }
 
+    private int determineStickyHeaderIndex() {
+        int childCount = getChildCount();
+        return childCount <= 1 ? -1 : childCount - 2;
+    }
+
     private void detachStickyHeader() {
         if (mStickyHeader != null) {
             detachView(mStickyHeader);
@@ -275,7 +281,7 @@ public class StickyHeadersLinearLayoutManager<T extends RecyclerView.Adapter & S
 
     private void attachStickyHeader() {
         if (mStickyHeader != null) {
-            attachView(mStickyHeader);
+            attachView(mStickyHeader, determineStickyHeaderIndex());
         }
     }
 
@@ -363,7 +369,7 @@ public class StickyHeadersLinearLayoutManager<T extends RecyclerView.Adapter & S
 
         // Add sticky header as a child view, to be detached / reattached whenever LinearLayoutManager#fill() is called,
         // which happens on layout and scroll (see overrides).
-        addView(stickyHeader);
+        addView(stickyHeader, determineStickyHeaderIndex());
         measureAndLayout(stickyHeader);
 
         // Ignore sticky header, as it's fully managed by this LayoutManager.
